@@ -12,14 +12,22 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { playSound } from "../services/soundHandler";
 import { COLORS } from "../constants";
 
-function AddWord() {
-  const [text, setText] = useState();
+function AddWord({ navigation }) {
+  const [text, setText] = useState("");
   const [wordData, setWordData] = useState();
 
-  function onChangeText(text) {
+  function onChangeText(inputText) {
     setWordData(undefined);
-    setText(text);
+    setText(inputText);
   }
+
+  useEffect(() => {
+    if (wordData && wordData.word) {
+      navigation.setOptions({ title: `Adding word "${wordData.word}"` });
+    } else {
+      navigation.setOptions({ title: "Adding word" });
+    }
+  }, [wordData, navigation]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
@@ -31,6 +39,12 @@ function AddWord() {
 
     return () => clearTimeout(delayDebounceFn);
   }, [text]);
+
+  function onAdd() {
+    if (wordData) {
+      navigation.navigate("AllWords", { wordData });
+    }
+  }
 
   return (
     <>
@@ -137,17 +151,6 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-  },
-  backPressable: {
-    position: "absolute",
-    width: 60,
-    borderRadius: 30,
-    aspectRatio: 1,
-    top: "2%",
-    left: "2%",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10,
   },
   playPressable: {
     marginHorizontal: 20,
